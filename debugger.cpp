@@ -1,19 +1,17 @@
-#include <iostream>
 #include <vector>
-#include <unordered_map>
 #include <cstdio>
+#include <unordered_map>
 
-using namespace std;
-
-// Union-Find data structure for handling equality constraints
+// Union-Find data structure for handling equality constraints with optimized performance
 class UnionFind {
 private:
-    unordered_map<int, int> parent;
-    unordered_map<int, int> rank;
+    std::unordered_map<int, int> parent;
+    std::unordered_map<int, int> rank;
     
 public:
     int find(int x) {
-        if (parent.find(x) == parent.end()) {
+        auto it = parent.find(x);
+        if (it == parent.end()) {
             parent[x] = x;
             rank[x] = 0;
             return x;
@@ -31,13 +29,16 @@ public:
         
         if (rootX != rootY) {
             // Union by rank
-            if (rank[rootX] < rank[rootY]) {
+            auto rankX = rank[rootX];
+            auto rankY = rank[rootY];
+            
+            if (rankX < rankY) {
                 parent[rootX] = rootY;
-            } else if (rank[rootX] > rank[rootY]) {
+            } else if (rankX > rankY) {
                 parent[rootY] = rootX;
             } else {
                 parent[rootY] = rootX;
-                rank[rootX]++;
+                rank[rootX] = rankX + 1;
             }
         }
     }
@@ -55,33 +56,27 @@ int main() {
         int n;
         scanf("%d", &n);
         
-        // Vectors to store equality and inequality constraints
-        vector<pair<int, int>> equals;
-        vector<pair<int, int>> not_equals;
+        // Create union-find structure
+        UnionFind uf;
         
-        // Read all constraints
+        // Vectors to store inequality constraints for later checking
+        std::vector<std::pair<int, int>> not_equals;
+        
+        // Read all constraints and process equality constraints immediately
         for (int i = 0; i < n; i++) {
             int x, y, e;
             scanf("%d %d %d", &x, &y, &e);
             
             if (e == 1) {
-                equals.push_back({x, y});
+                uf.unite(x, y);
             } else {
                 not_equals.push_back({x, y});
             }
         }
         
-        // Create union-find structure
-        UnionFind uf;
-        
-        // Process all equality constraints first
-        for (auto& p : equals) {
-            uf.unite(p.first, p.second);
-        }
-        
         // Check if any inequality constraint contradicts the equality constraints
         bool valid = true;
-        for (auto& p : not_equals) {
+        for (const auto& p : not_equals) {
             if (uf.connected(p.first, p.second)) {
                 valid = false;
                 break;
