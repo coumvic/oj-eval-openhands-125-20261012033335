@@ -74,10 +74,21 @@ int main() {
         std::vector<std::pair<int, int>> not_equals;
         
         // Read all constraints
+        bool valid = true;
         for (int i = 0; i < n; i++) {
             int x = readInt();
             int y = readInt();
             int e = readInt();
+            
+            // Handle the case where x == y
+            if (x == y) {
+                if (e == 0) {
+                    // A variable cannot be not equal to itself
+                    valid = false;
+                }
+                // If e == 1, x == x is always true, so we can ignore this constraint
+                continue;
+            }
             
             // Collect all variables for coordinate compression
             variables.push_back(x);
@@ -88,6 +99,12 @@ int main() {
             } else {
                 not_equals.push_back({x, y});
             }
+        }
+        
+        // If we found an impossible constraint (x != x), output NO and skip the rest
+        if (!valid) {
+            printf("NO\n");
+            continue;
         }
         
         // Coordinate compression
@@ -111,17 +128,17 @@ int main() {
         }
         
         // Check if any inequality constraint contradicts the equality constraints
-        bool valid = true;
+        bool result = true;
         for (const auto& p : not_equals) {
             int x = comp_map[p.first];
             int y = comp_map[p.second];
             if (uf.connected(x, y)) {
-                valid = false;
+                result = false;
                 break;
             }
         }
         
-        if (valid) {
+        if (result) {
             printf("YES\n");
         } else {
             printf("NO\n");
