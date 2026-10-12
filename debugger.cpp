@@ -3,6 +3,20 @@
 #include <algorithm>
 #include <unordered_map>
 
+// Fast input function for large input sizes
+inline int readInt() {
+    int x = 0;
+    char c = getchar_unlocked();
+    while (c < '0' || c > '9') {
+        c = getchar_unlocked();
+    }
+    while (c >= '0' && c <= '9') {
+        x = x * 10 + (c - '0');
+        c = getchar_unlocked();
+    }
+    return x;
+}
+
 // Union-Find data structure with array-based implementation for better performance
 class UnionFind {
 private:
@@ -49,12 +63,10 @@ public:
 };
 
 int main() {
-    int t;
-    scanf("%d", &t);
+    int t = readInt();
     
     while (t--) {
-        int n;
-        scanf("%d", &n);
+        int n = readInt();
         
         // Vectors to store all constraints for coordinate compression
         std::vector<int> variables;
@@ -63,8 +75,9 @@ int main() {
         
         // Read all constraints
         for (int i = 0; i < n; i++) {
-            int x, y, e;
-            scanf("%d %d %d", &x, &y, &e);
+            int x = readInt();
+            int y = readInt();
+            int e = readInt();
             
             // Collect all variables for coordinate compression
             variables.push_back(x);
